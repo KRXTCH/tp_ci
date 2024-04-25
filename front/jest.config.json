@@ -1,0 +1,9 @@
+{
+    "bail": 1,
+    "verbose": true,
+    "collectCoverageFrom": [
+        "src/**/*js",
+        "!src/reportWebVitals.js",
+        "!src/index.js"
+    ]
+}
