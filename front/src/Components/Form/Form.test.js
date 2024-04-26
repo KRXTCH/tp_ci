@@ -1,7 +1,33 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import Form from './Form';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+
+const mock = new MockAdapter(axios);
+
+const users = [
+    {
+      birthDate: '1990-01-01',
+      email: 'john.doe@example.com',
+      name: 'Doe',
+      surname: 'John',
+      city: 'Nice',
+      postalCode: '12345'
+    },
+    {
+      birthDate: '1985-05-20',
+      email: 'jane.smith@example.com',
+      name: 'Smith',
+      surname: 'Jane',
+      city: 'Paris',
+      postalCode: '54321'
+    },
+  ];
+
+const port = 1234;
+  
 
 /**
 * @function Form
@@ -86,7 +112,7 @@ describe('Form component', () => {
   });
 
   test('submits the form with valid data', async () => {
-    render(<Form />);
+    render(<Form port={port}/>);
 
     fireEvent.change(screen.getByLabelText('Date de naissance:'), {
       target: { value: '1990-01-01' },
@@ -107,6 +133,8 @@ describe('Form component', () => {
       target: { value: '12345' },
     });
 
+    mock.onPost(`http://localhost:${port}/users`).reply(201, JSON.stringify(users));
+
     await act(async () => {
       fireEvent.click(screen.getByText('Soumettre'));
     });
@@ -119,14 +147,6 @@ describe('Form component', () => {
     expect(screen.getByLabelText('Prenom:')).toHaveValue('');
     expect(screen.getByLabelText('Ville:')).toHaveValue('');
     expect(screen.getByLabelText('Code postal:')).toHaveValue('');
-    
-    expect(localStorage.getItem('formData')).not.toBeNull();
-    expect(localStorage.getItem('formData')).toContain('1990-01-01');
-    expect(localStorage.getItem('formData')).toContain('john.doe@example.com');
-    expect(localStorage.getItem('formData')).toContain('Doe');
-    expect(localStorage.getItem('formData')).toContain('John');
-    expect(localStorage.getItem('formData')).toContain('Nice');
-    expect(localStorage.getItem('formData')).toContain('12345');
   });
 
   test('displays error messages for invalid data', async () => {
@@ -164,7 +184,38 @@ describe('Form component', () => {
 
     expect(screen.queryByText('Formulaire soumis avec succès !')).not.toBeInTheDocument();
     expect(screen.getByText('Veuillez remplir correctement tous les champs du formulaire.')).toBeInTheDocument();
+  });
 
-    expect(localStorage.getItem('formData')).toBeNull();
+  test('displays error toats when api error', async () => {
+    render(<Form port={port} />);
+
+    fireEvent.change(screen.getByLabelText('Date de naissance:'), {
+        target: { value: '1990-01-01' },
+      });
+      fireEvent.change(screen.getByLabelText('Adresse e-mail:'), {
+        target: { value: 'john.doe@example.com' },
+      });
+      fireEvent.change(screen.getByLabelText('Nom:'), {
+        target: { value: 'Doe' },
+      });
+      fireEvent.change(screen.getByLabelText('Prenom:'), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByLabelText('Ville:'), {
+        target: { value: 'Nice' },
+      });
+      fireEvent.change(screen.getByLabelText('Code postal:'), {
+        target: { value: '12345' },
+      });
+
+    mock.onPost(`http://localhost:${port}/users`).reply(500, "error");
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Soumettre'));
+    });
+
+    await waitFor(() => {
+        expect(screen.queryByText("Erreur lors de l'envoie du formulaire.")).toBeInTheDocument();
+    })
   });
 });
