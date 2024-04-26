@@ -87,7 +87,7 @@ function UserManager({port}) {
           </thead>
           <tbody>
             {userList.map((user) => (
-              <tr key={user._id}>
+              <tr key={user._id ?? user.id}>
                 <td>{user.surname}</td>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
@@ -97,7 +97,7 @@ function UserManager({port}) {
                   <button
                     type="button"
                     style={{ color: "red" }}
-                    onClick={() => handleOpenModal(user._id)}
+                    onClick={() => handleOpenModal(user._id  ?? user.id)}
                   >
                     Delete
                   </button>
@@ -107,7 +107,7 @@ function UserManager({port}) {
           </tbody>
         </table>
       </div>
-      <Form />
+      <Form port={port} />
       <ReactModal isOpen={showModal} className="modal">
         <h1>Delete user</h1>
         <input

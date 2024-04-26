@@ -50,12 +50,13 @@ async def get_users():
 
 # Route pour supprimer un utilisateur
 @app.delete('/users/{user_id}')
-async def delete_user(user_id: int, delete_pswd: str):
+async def delete_user(user_id: int, body: dict = Body(...)):
     try:
-        if delete_pswd != 'delete':
+        if body['delete_pswd'] != 'delete':
             raise HTTPException(status_code=401, detail="Unauthorized")
         cursor = connection.cursor()
         sql = "DELETE FROM User WHERE id = %s"
+        print("USER ID : %s", user_id)
         cursor.execute(sql, (user_id,))
         connection.commit()
         cursor.close()
