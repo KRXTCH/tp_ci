@@ -43,6 +43,10 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: check git status
         run: git status
+      - name: check git diff
+        run: git diff
+      - name: check git diff stages
+        run: git diff --staged
       - name: Update tag version
         run: |
           git config --global user.email "lorysjele@gmail.com"
