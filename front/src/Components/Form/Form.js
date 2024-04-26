@@ -11,7 +11,7 @@ import axios from 'axios';
  * Composant de formulaire pour la saisie et la sauvegarde des données utilisateur.
  * @returns {JSX.Element} Formulaire.
  */
-function Form() {
+function Form({port}) {
     const [formData, setFormData] = React.useState({
       birthDate: '',
       email: '',
@@ -40,7 +40,7 @@ function Form() {
     const saveFormData = async() => {
       try {
         const api = axios.create({
-          baseURL: `http://localhost:3000`
+          baseURL: `http://localhost:${port}`
         });
 
         const response = await api.post(`/users`, JSON.stringify(formData), {

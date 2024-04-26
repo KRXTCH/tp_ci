@@ -1,8 +1,8 @@
-version: '3'
+version: '3.9'
 
 services:
   mongodb:
-    image: mongo
+    image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
@@ -12,17 +12,18 @@ services:
       - mongo_network
 
   mysql:
-    image: mysql
+    image: mysql:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: ynovroot
+      MYSQL_DATABASE: ynovmsql
+      MYSQL_USER: ynovuser
+      MYSQL_PASSWORD: ynovpwd
+    volumes:
+      - ./migrations:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
     networks:
       - mysql_network
 
