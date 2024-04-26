@@ -28,7 +28,7 @@ function UserManager({port}) {
       }
     };
     getUsers();
-  }, []);
+  }, [api]);
 
   const handleOpenModal = (userId) => {
     setSelectedUserId(userId);
