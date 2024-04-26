@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [21.x]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm ci and test
+      - name: npm i and test
         run: |
           cd front
           npm i
@@ -52,10 +52,6 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
-      - name: Get directory
-        run: |
-          cd front
-          ls
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
@@ -66,6 +62,7 @@ jobs:
           git config --global user.email "lorysjele@gmail.com"
           git config --global user.name "KRXTCH"
           git tag 0.1.0-${{github.run_id}}${{github.run_number}}${{github.run_attempt}} -a -m "build alpha ${{github.run_number}}"
+          cd front
           npm version from-git
 
   deploy:
