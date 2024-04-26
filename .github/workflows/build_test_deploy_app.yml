@@ -62,6 +62,7 @@ jobs:
           git config --global user.email "lorysjele@gmail.com"
           git config --global user.name "KRXTCH"
           git tag 0.1.0-${{github.run_id}}${{github.run_number}}${{github.run_attempt}} -a -m "build alpha ${{github.run_number}}"
+          cd front
           npm version from-git
 
   deploy:
