@@ -20,7 +20,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --coverage --watchAll=false --collectCoverageFrom=!src/reportWebVitals.js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/logo.svg --transformIgnorePatterns node_modules/(?!axios)/",
+    "test": "react-scripts test --coverage --watchAll=false --collectCoverageFrom=!src/reportWebVitals.js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/logo.svg",
     "eject": "react-scripts eject",
     "jsdoc": "jsdoc -c ./jsdoc.config.json -r -d ./docs",
     "predeploy": "npm run build",
