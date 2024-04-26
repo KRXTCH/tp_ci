@@ -1,0 +1,78 @@
+name: Build, Test and Deploy React Application
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_test:
+    permissions:
+        contents: write
+        pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [21.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm i and test
+        run: |
+          cd front
+          npm ci
+          npm test  
+      - name: Build all stacks
+        run: docker-compose up -d
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Update tag version
+        run: |
+          git config --global user.email "lorysjele@gmail.com"
+          git config --global user.name "KRXTCH"
+          git tag 0.1.0-${{github.run_id}}${{github.run_number}}${{github.run_attempt}} -a -m "build alpha ${{github.run_number}}"
+          cd front
+          npm version from-git
+      - name: Build and docs
+        run: |
+          cd front
+          npm run jsdoc
+          npm run build --if-present
+      - name: Push changes
+        run: git push
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: front/build
+          if-no-files-found: error
+      
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+    
+    needs: build_test
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2

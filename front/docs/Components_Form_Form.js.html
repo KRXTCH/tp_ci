@@ -31,193 +31,223 @@ import { birthDateValidator } from "../../Validators/BirthDateValidator/birthDat
 import { mailValidator } from "../../Validators/MailValidator/mailValidator";
 import { nameValidator } from "../../Validators/NameValidator/nameValidator";
 import { postalCodeValidator } from "../../Validators/PostalCodeValidator/postalCodeValidator";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 /**
  * Composant de formulaire pour la saisie et la sauvegarde des données utilisateur.
  * @returns {JSX.Element} Formulaire.
  */
-function Form() {
-    const [formData, setFormData] = React.useState({
-      birthDate: '',
-      email: '',
-      name: '',
-      surname: '',
-      city: '',
-      postalCode: ''
+function Form({ port }) {
+  const [formData, setFormData] = React.useState({
+    birthDate: "",
+    email: "",
+    name: "",
+    surname: "",
+    city: "",
+    postalCode: "",
+  });
+
+  const [validationResults, setValidationResults] = React.useState({
+    isBirthDateValid: true,
+    isEmailValid: true,
+    isNameValid: true,
+    isSurnameValid: true,
+    isCityValid: true,
+    isPostalCodeValid: true,
+  });
+
+  const [isFormValid, setIsFormValid] = React.useState(false);
+
+  React.useEffect(() => {
+    const allFieldsFilled = Object.values(formData).every(
+      (value) => value.trim() !== ""
+    );
+    setIsFormValid(allFieldsFilled);
+  }, [formData]);
+
+  const saveFormData = async () => {
+    const api = axios.create({
+      baseURL: `http://localhost:${port}`,
     });
-  
-    const [validationResults, setValidationResults] = React.useState({
-      isBirthDateValid: true,
-      isEmailValid: true,
-      isNameValid: true,
-      isSurnameValid: true,
-      isCityValid: true,
-      isPostalCodeValid: true
-    });
 
-    const [isFormValid, setIsFormValid] = React.useState(false);
-
-    React.useEffect(() => {
-      const allFieldsFilled = Object.values(formData).every((value) => value.trim() !== '');
-      setIsFormValid(allFieldsFilled);
-    }, [formData]);
-
-    const saveFormData = () => {
-      localStorage.setItem('formData', JSON.stringify(formData));
-
-      setFormData({
-        birthDate: '',
-        email: '',
-        name: '',
-        surname: '',
-        city: '',
-        postalCode: ''
-      });  
-  
-      toast.success('Formulaire soumis avec succès !');
-    };
-  
-    const handleInputChange = (e) => {
-      const { name, value } = e.target;
-      
-      if (value == '') {
-        setIsFormValid(false);
-      } else {
-        setIsFormValid(true);
-      }
-
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    };
-  
-    const handleSubmit = (e) => {
-      e.preventDefault();
-  
-      const isBirthDateValid = birthDateValidator(formData.birthDate);
-      const isEmailValid = mailValidator(formData.email);
-      const isNameValid = nameValidator(formData.name);
-      const isSurnameValid = nameValidator(formData.surname);
-      const isCityValid = nameValidator(formData.city);
-      const isPostalCodeValid = postalCodeValidator(formData.postalCode);
-  
-      setValidationResults({
-        isBirthDateValid,
-        isEmailValid,
-        isNameValid,
-        isSurnameValid,
-        isCityValid,
-        isPostalCodeValid
+    api
+      .post(`/users`, JSON.stringify(formData), {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          toast.success("Formulaire soumis avec succès !");
+        }
+      })
+      .catch((error) => {
+        toast.error(`Erreur lors de l'envoie du formulaire.`);
+        console.error(error);
       });
 
-      const formIsValid = isBirthDateValid &amp;&amp; isEmailValid &amp;&amp; isNameValid &amp;&amp; isSurnameValid &amp;&amp; isCityValid &amp;&amp; isPostalCodeValid;
-  
-      if (formIsValid) {
-        saveFormData();
-      } else {
-        toast.error('Veuillez remplir correctement tous les champs du formulaire.');
-        localStorage.removeItem('formData');
-      }
-    };
-  
-    return (
-      &lt;div>
-        &lt;form onSubmit={handleSubmit}>
-          &lt;div>
-            &lt;label htmlFor="birthDate">Date de naissance:&lt;/label>
-            &lt;input
-              id="birthDate"
-              type="text"
-              name="birthDate"
-              value={formData.birthDate}
-              onChange={handleInputChange}
-            />
-            {!validationResults.isBirthDateValid &amp;&amp; (
-              &lt;span style={{ color: 'red' }}>Date de naissance invalide&lt;/span>
-            )}
-          &lt;/div>
-    
-          &lt;div>
-            &lt;label htmlFor="email">Adresse e-mail:&lt;/label>
-            &lt;input
-              id="email"
-              type="text"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-            {!validationResults.isEmailValid &amp;&amp; (
-              &lt;span style={{ color: 'red' }}>Adresse e-mail invalide&lt;/span>
-            )}
-          &lt;/div>
-    
-          &lt;div>
-            &lt;label htmlFor="name">Nom:&lt;/label>
-            &lt;input
-              id="name"
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-            {!validationResults.isNameValid &amp;&amp; (
-              &lt;span style={{ color: 'red' }}>Nom invalide&lt;/span>
-            )}
-          &lt;/div>
+    setFormData({
+      birthDate: "",
+      email: "",
+      name: "",
+      surname: "",
+      city: "",
+      postalCode: "",
+    });
+  };
 
-          &lt;div>
-            &lt;label htmlFor="surname">Prenom:&lt;/label>
-            &lt;input
-              id="surname"
-              type="text"
-              name="surname"
-              value={formData.surname}
-              onChange={handleInputChange}
-            />
-            {!validationResults.isSurnameValid &amp;&amp; (
-              &lt;span style={{ color: 'red' }}>Prenom invalide&lt;/span>
-            )}
-          &lt;/div>
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
 
-          &lt;div>
-            &lt;label htmlFor="city">Ville:&lt;/label>
-            &lt;input
-              id="city"
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-            />
-            {!validationResults.isCityValid &amp;&amp; (
-              &lt;span style={{ color: 'red' }}>Ville invalide&lt;/span>
-            )}
-          &lt;/div>
-    
-          &lt;div>
-            &lt;label htmlFor="postalCode">Code postal:&lt;/label>
-            &lt;input
-              id="postalCode"
-              type="text"
-              name="postalCode"
-              value={formData.postalCode}
-              onChange={handleInputChange}
-            />
-            {!validationResults.isPostalCodeValid &amp;&amp; (
-              &lt;span style={{ color: 'red' }}>Code postal invalide&lt;/span>
-            )}
-          &lt;/div>
-    
-          &lt;button type="submit" disabled={!isFormValid}>Soumettre&lt;/button>
-        &lt;/form>
-        &lt;ToastContainer />
-      &lt;/div>
-    );
-  }
-  
-  export default Form;</code></pre>
+    if (value === "") {
+      setIsFormValid(false);
+    } else {
+      setIsFormValid(true);
+    }
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const isBirthDateValid = birthDateValidator(formData.birthDate);
+    const isEmailValid = mailValidator(formData.email);
+    const isNameValid = nameValidator(formData.name);
+    const isSurnameValid = nameValidator(formData.surname);
+    const isCityValid = nameValidator(formData.city);
+    const isPostalCodeValid = postalCodeValidator(formData.postalCode);
+
+    setValidationResults({
+      isBirthDateValid,
+      isEmailValid,
+      isNameValid,
+      isSurnameValid,
+      isCityValid,
+      isPostalCodeValid,
+    });
+
+    const formIsValid =
+      isBirthDateValid &amp;&amp;
+      isEmailValid &amp;&amp;
+      isNameValid &amp;&amp;
+      isSurnameValid &amp;&amp;
+      isCityValid &amp;&amp;
+      isPostalCodeValid;
+
+    if (formIsValid) {
+      saveFormData();
+    } else {
+      toast.error(
+        "Veuillez remplir correctement tous les champs du formulaire."
+      );
+    }
+  };
+
+  return (
+    &lt;div>
+      &lt;h2>Create user&lt;/h2>
+      &lt;form onSubmit={handleSubmit}>
+        &lt;div>
+          &lt;label htmlFor="birthDate">Date de naissance:&lt;/label>
+          &lt;input
+            id="birthDate"
+            type="text"
+            name="birthDate"
+            value={formData.birthDate}
+            onChange={handleInputChange}
+          />
+          {!validationResults.isBirthDateValid &amp;&amp; (
+            &lt;span style={{ color: "red" }}>Date de naissance invalide&lt;/span>
+          )}
+        &lt;/div>
+
+        &lt;div>
+          &lt;label htmlFor="email">Adresse e-mail:&lt;/label>
+          &lt;input
+            id="email"
+            type="text"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+          />
+          {!validationResults.isEmailValid &amp;&amp; (
+            &lt;span style={{ color: "red" }}>Adresse e-mail invalide&lt;/span>
+          )}
+        &lt;/div>
+
+        &lt;div>
+          &lt;label htmlFor="name">Nom:&lt;/label>
+          &lt;input
+            id="name"
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
+          {!validationResults.isNameValid &amp;&amp; (
+            &lt;span style={{ color: "red" }}>Nom invalide&lt;/span>
+          )}
+        &lt;/div>
+
+        &lt;div>
+          &lt;label htmlFor="surname">Prenom:&lt;/label>
+          &lt;input
+            id="surname"
+            type="text"
+            name="surname"
+            value={formData.surname}
+            onChange={handleInputChange}
+          />
+          {!validationResults.isSurnameValid &amp;&amp; (
+            &lt;span style={{ color: "red" }}>Prenom invalide&lt;/span>
+          )}
+        &lt;/div>
+
+        &lt;div>
+          &lt;label htmlFor="city">Ville:&lt;/label>
+          &lt;input
+            id="city"
+            type="text"
+            name="city"
+            value={formData.city}
+            onChange={handleInputChange}
+          />
+          {!validationResults.isCityValid &amp;&amp; (
+            &lt;span style={{ color: "red" }}>Ville invalide&lt;/span>
+          )}
+        &lt;/div>
+
+        &lt;div>
+          &lt;label htmlFor="postalCode">Code postal:&lt;/label>
+          &lt;input
+            id="postalCode"
+            type="text"
+            name="postalCode"
+            value={formData.postalCode}
+            onChange={handleInputChange}
+          />
+          {!validationResults.isPostalCodeValid &amp;&amp; (
+            &lt;span style={{ color: "red" }}>Code postal invalide&lt;/span>
+          )}
+        &lt;/div>
+
+        &lt;button type="submit" disabled={!isFormValid}>
+          Soumettre
+        &lt;/button>
+      &lt;/form>
+      &lt;ToastContainer />
+    &lt;/div>
+  );
+}
+
+export default Form;
+</code></pre>
         </article>
     </section>
 
@@ -233,7 +263,7 @@ function Form() {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Feb 08 2024 14:19:11 GMT+0100 (heure normale d’Europe centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Apr 26 2024 20:13:28 GMT+0200 (heure d’été d’Europe centrale)
 </footer>
 
 <script> prettyPrint(); </script>
