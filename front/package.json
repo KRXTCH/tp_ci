@@ -15,7 +15,7 @@
     "web-vitals": "^2.1.4",
     "react-modal": "3.16.1"
   },
-  "homepage": "https://krxtch.github.io/tested-form-validation/",
+  "homepage": "https://krxtch.github.io/tp_ci/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
