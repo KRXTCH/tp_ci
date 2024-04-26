@@ -17,7 +17,7 @@ function UserManager({port}) {
   });
 
   useEffect(() => {
-    async function getUsers() {
+    const getUsers = () => {
       try {
         api.get(`/users`).then((response) => {
           setUserList(response.data);
@@ -26,9 +26,9 @@ function UserManager({port}) {
       } catch (error) {
         console.log("Error : ", error);
       }
-    }
+    };
     getUsers();
-  }, [showModal]);
+  }, []);
 
   const handleOpenModal = (userId) => {
     setSelectedUserId(userId);
