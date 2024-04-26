@@ -41,6 +41,7 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Build and docs
         run: |
+          cd front
           npm run jsdoc
           npm run build --if-present
       - name: Setup Pages
