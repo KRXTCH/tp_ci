@@ -51,7 +51,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: /front/build
+          path: build
           if-no-files-found: error
       - name: Update tag version
         run: |
