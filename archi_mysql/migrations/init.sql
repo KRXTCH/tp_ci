@@ -1,9 +1,0 @@
-CREATE TABLE User (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    birthDate VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    surname VARCHAR(255) NOT NULL,
-    city VARCHAR(255) NOT NULL,
-    postalCode VARCHAR(255) NOT NULL,
-)

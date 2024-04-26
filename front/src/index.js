@@ -10,17 +10,14 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Router>
-      <Routes>
-        <Route path="/mongo">
-          <UserManager port={3000}></UserManager>
-        </Route>
-        <Route path="/mysql">
-            <UserManager port={5000}></UserManager>
-        </Route>
-        <Route path="/">
-          <App />
-        </Route>
-      </Routes>
+    <Routes>
+      <Route path="/mongo" element={<UserManager port={3000} />}>
+      </Route>
+      <Route path="/mysql" element={<UserManager port={5000} />}>
+      </Route>
+      <Route path="/" element={<App />}>
+      </Route>
+    </Routes>
     </Router>
   </React.StrictMode>
 );

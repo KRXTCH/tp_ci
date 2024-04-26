@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   mongodb:
@@ -11,16 +11,19 @@ services:
     networks:
       - mongo_network
 
-  db:
+  mysql:
     image: mysql:latest
     restart: always
-    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: ynovroot
+      MYSQL_DATABASE: ynovmsql
+      MYSQL_USER: ynovuser
+      MYSQL_PASSWORD: ynovpwd
+    volumes:
+      - ./migrations:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
-    volumes:
-      - ./archi_mysql/migrations:/docker-entrypoint-initdb.d
     networks:
       - mysql_network
 
@@ -38,7 +41,7 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - db
+      - mysql
     networks:
       - mysql_network
 

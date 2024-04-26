@@ -15,10 +15,11 @@ app.add_middleware(
 
 # Connexion à la base de données MySQL
 connection = mysql.connector.connect(
-    host='db',
-    user='ynovuser',
-    password='ynovroot',
-    database='ynovmsql',
+    database="ynovmsql",
+    user="ynovuser",
+    password="ynovpwd",
+    port=3306,
+    host="mysql"
 )
 
 # Route pour ajouter un utilisateur
