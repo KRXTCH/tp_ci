@@ -49,7 +49,9 @@ jobs:
         id: pages
         uses: actions/configure-pages@v3
       - name: Get directory
-        run: ls
+        run: |
+          cd front
+          ls
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
