@@ -4,7 +4,6 @@ import mysql.connector
 
 app = FastAPI()
 
-# Configuration CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,7 +12,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Connexion à la base de données MySQL
 connection = mysql.connector.connect(
     database="ynovmsql",
     user="ynovuser",
@@ -22,7 +20,6 @@ connection = mysql.connector.connect(
     host="mysql"
 )
 
-# Route pour ajouter un utilisateur
 @app.post('/users')
 async def add_user(user_data: dict = Body(...)):
     try:
@@ -35,7 +32,6 @@ async def add_user(user_data: dict = Body(...)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# Route pour obtenir tous les utilisateurs
 @app.get('/users')
 async def get_users():
     try:
@@ -48,7 +44,6 @@ async def get_users():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Route pour supprimer un utilisateur
 @app.delete('/users/{user_id}')
 async def delete_user(user_id: int, body: dict = Body(...)):
     try:
