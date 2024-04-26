@@ -28,7 +28,7 @@ function UserManager({port}) {
       }
     }
     getUsers();
-  }, []);
+  }, [showModal]);
 
   const handleOpenModal = (userId) => {
     setSelectedUserId(userId);
@@ -54,7 +54,7 @@ function UserManager({port}) {
           },
         })
         .then((response) => {
-          if (response.status == 200) {
+          if (response.status === 200) {
             toast.success(response.data);
           } else {
             toast.error(response.data);
