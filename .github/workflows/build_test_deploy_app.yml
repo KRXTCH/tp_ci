@@ -57,6 +57,8 @@ jobs:
         with:
           path: front/build
           if-no-files-found: error
+      - name : check git change
+        run: git diff
       - name: Update tag version
         run: |
           git config --global user.email "lorysjele@gmail.com"
