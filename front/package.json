@@ -1,6 +1,6 @@
 {
   "name": "tp_ci",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": false,
   "dependencies": {
     "@testing-library/jest-dom": "^6.4.2",
