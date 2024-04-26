@@ -1,15 +1,11 @@
 name: Build, Test and Deploy React Application
 
-# Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: 
-    - master
+    branches:
     - main
   pull_request:
     branches:
-      - master
       - main
 
 jobs:
@@ -30,10 +26,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: check node&npm versions
-        run: |
-          node -v
-          npm -v
       - name: npm i and test
         run: |
           cd front
@@ -45,12 +37,6 @@ jobs:
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: check git status
-        run: git status
-      - name: check git diff
-        run: git diff
-      - name: check git diff stages
-        run: git diff --staged
       - name: Update tag version
         run: |
           git config --global user.email "lorysjele@gmail.com"
