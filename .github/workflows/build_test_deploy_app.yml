@@ -12,22 +12,19 @@ on:
       - master
       - main
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build_test:
-    permissions:                # Job-level permissions configuration starts here
-        contents: write           # 'write' access to repository contents
-        pull-requests: write      # 'write' access to pull requests
-    # The type of runner that the job will run on
+    permissions:
+        contents: write
+        pull-requests: write
+
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [21.x]
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -44,11 +41,20 @@ jobs:
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Update tag version
+        run: |
+          git config --global user.email "lorysjele@gmail.com"
+          git config --global user.name "KRXTCH"
+          git tag 0.1.0-${{github.run_id}}${{github.run_number}}${{github.run_attempt}} -a -m "build alpha ${{github.run_number}}"
+          cd front
+          npm version from-git
       - name: Build and docs
         run: |
           cd front
           npm run jsdoc
           npm run build --if-present
+      - name: Push changes
+        run: git push
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
@@ -57,31 +63,19 @@ jobs:
         with:
           path: front/build
           if-no-files-found: error
-      - name : check git change
-        run: git diff
-      - name: Update tag version
-        run: |
-          git config --global user.email "lorysjele@gmail.com"
-          git config --global user.name "KRXTCH"
-          git tag 0.1.0-${{github.run_id}}${{github.run_number}}${{github.run_attempt}} -a -m "build alpha ${{github.run_number}}"
-          cd front
-          npm version from-git
+      
 
   deploy:
-    # Deploy to the github-pages environment
     environment:
       name: github-pages
       url: ${{steps.deployment.outputs.page_url}}
     runs-on: ubuntu-latest
 
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
+      pages: write
+      id-token: write
     
-    # Add a dependency to the build job
     needs: build_test
-    # Specify runner + deployment step
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
