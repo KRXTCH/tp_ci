@@ -30,12 +30,10 @@ jobs:
           npm test  
       - name: Build all stacks
         run: docker-compose up -d
-      - name: Change directory to front
-        run: cd front
       - name: Run e2e tests with cypress
         uses: cypress-io/github-action@v6
         with: 
-          path: front
+          working-directory: front
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
