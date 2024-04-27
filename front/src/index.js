@@ -11,9 +11,9 @@ root.render(
   <React.StrictMode>
     <Router>
     <Routes>
-      <Route path="/mongo" element={<UserManager port={3000} />}>
+      <Route path="/tp_ci/mongo" element={<UserManager port={3000} />}>
       </Route>
-      <Route path="/mysql" element={<UserManager port={5000} />}>
+      <Route path="/tp_ci/mysql" element={<UserManager port={5000} />}>
       </Route>
       <Route path="/tp_ci" element={<App />}>
       </Route>
