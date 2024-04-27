@@ -15,7 +15,7 @@ root.render(
       </Route>
       <Route path="/mysql" element={<UserManager port={5000} />}>
       </Route>
-      <Route path="/" element={<App />}>
+      <Route path="/tp_ci" element={<App />}>
       </Route>
     </Routes>
     </Router>
