@@ -1,13 +1,20 @@
-import "./App.css";
+import UserManager from "./Pages/UserManager";
+import Home from "./Pages/Home";
+import { Route, Routes } from "react-router-dom";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Welcome !</h1>
-        <p>You can accessed to both backend by '/mongo' or '/mysql'</p>
-      </header>
-    </div>
+    
+    <>
+        <Routes>
+            <Route path="/mongo" element={<UserManager port={3000} />}>
+            </Route>
+            <Route path="/mysql" element={<UserManager port={5000} />}>
+            </Route>
+            <Route path="/" element={<Home />}>
+            </Route>
+        </Routes>
+    </>
   );
 }
 

@@ -16,7 +16,7 @@
     "react-modal": "3.16.1",
     "axios-mock-adapter": "1.22.0"
   },
-  "homepage": "https://krxtch.github.io/tp_ci/",
+  "homepage": "https://krxtch.github.io/tp_ci/#",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
