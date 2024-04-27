@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import ReactModal from "react-modal";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Form from "../Components/Form/Form";
 
-function UserManager({port}) {
+function UserManager({ port }) {
   let [userCount, setUserCount] = useState(0);
   let [userList, setUserList] = useState([]);
   let [showModal, setShowModal] = useState(false);
@@ -18,14 +18,14 @@ function UserManager({port}) {
 
   useEffect(() => {
     const getUsers = () => {
-      try {
         api.get(`/users`).then((response) => {
           setUserList(response.data);
           setUserCount(response.data.length);
+        })
+        .catch((error) => {
+          toast.error("Une erreur est survenue lors de la récupération des utilisateurs.");
+          console.error(error);
         });
-      } catch (error) {
-        console.log("Error : ", error);
-      }
     };
     getUsers();
   }, [api]);
@@ -45,26 +45,22 @@ function UserManager({port}) {
   };
 
   const onDelete = function () {
-    try {
-      api
-        .delete(`/users/${selectedUserId}`, {
-          data: { delete_pswd: deletePswd },
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            toast.success(response.data);
-          } else {
-            toast.error(response.data);
-          }
-        });
+    api
+      .delete(`/users/${selectedUserId}`, {
+        data: { delete_pswd: deletePswd },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        toast.success(response.data);
+      })
+      .catch((error) => {
+        toast.error("Une erreur est survenue.");
+        console.error(error);
+      });
 
-      handleCloseModal();
-    } catch (error) {
-      console.log("Une erreur est survenue lors de la suppression : ", error);
-    }
+    handleCloseModal();
   };
 
   return (
@@ -73,13 +69,13 @@ function UserManager({port}) {
       <p>{userCount} user(s) already registered</p>
       <div>
         <h2>Manage users</h2>
-        <p>{userCount} user(s) already registered</p>
         <table>
           <thead>
             <tr>
               <th>Surname</th>
               <th>Name</th>
               <th>Email</th>
+              <th>Birthdate</th>
               <th>City</th>
               <th>Postal Code</th>
               <th>Action</th>
@@ -91,13 +87,14 @@ function UserManager({port}) {
                 <td>{user.surname}</td>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
+                <td>{user.birthDate}</td>
                 <td>{user.city}</td>
                 <td>{user.postalCode}</td>
                 <td>
                   <button
                     type="button"
                     style={{ color: "red" }}
-                    onClick={() => handleOpenModal(user._id  ?? user.id)}
+                    onClick={() => handleOpenModal(user._id ?? user.id)}
                   >
                     Delete
                   </button>
@@ -116,10 +113,9 @@ function UserManager({port}) {
           value={deletePswd}
           onChange={handleDeletePswd}
         ></input>
-        <button onClick={onDelete}>Delete</button>
+        <button onClick={onDelete}>Confirm</button>
         <button onClick={handleCloseModal}>Cancel</button>
       </ReactModal>
-      <ToastContainer />
     </div>
   );
 }
