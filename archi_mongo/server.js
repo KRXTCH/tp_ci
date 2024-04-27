@@ -53,7 +53,7 @@ app.delete("/users/:id", async (req, res) => {
       res.status(401);
     }
     await User.findByIdAndDelete(req.params.id);
-    res.send("Utilisateur supprimé avec succès");
+    res.send("User deleted successfully");
   } catch (error) {
     res.status(500).send(error);
   }
