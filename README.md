@@ -1,70 +1,94 @@
-# Getting Started with Create React App
+# README
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This Docker Compose configuration sets up a development environment with MongoDB, MySQL, backend services (one using MongoDB and the other MySQL), and a frontend application.
 
-## Available Scripts
+## Prerequisites
 
-In the project directory, you can run:
+- Docker installed on your system.
 
-### `npm start`
+## Getting Started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Clone this repository to your local machine.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+2. Navigate to the directory containing the `docker-compose.yml` file.
 
-### `npm test`
+3. Run the following command to start the services:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    ```
+    docker-compose up
+    ```
 
-### `npm run build`
+4. Once the containers are up and running, you can access the frontend application at `http://localhost`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Services
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### MongoDB
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Image**: mongo:latest
+- **Ports**: 27017:27017
+- **Volume**: mongodb_data:/data/db
+- **Command**: mongod --noauth
 
-### `npm run eject`
+### MySQL
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Image**: mysql:latest
+- **Ports**: 3306:3306
+- **Environment Variables**:
+  - MYSQL_ROOT_PASSWORD: ynovroot
+  - MYSQL_DATABASE: ynovmsql
+  - MYSQL_USER: ynovuser
+  - MYSQL_PASSWORD: ynovpwd
+- **Volumes**:
+  - ./migrations:/docker-entrypoint-initdb.d
+  - mysql_data:/var/lib/mysql
+- **Healthcheck**:
+  - Test: `mysqladmin ping -h localhost`
+  - Interval: 10 seconds
+  - Timeout: 5 seconds
+  - Retries: 3
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Backend MongoDB
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Build**: ./archi_mongo
+- **Ports**: 3000:3000
+- **Depends On**: mongodb
+- **Networks**: mongo_network
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Backend MySQL
 
-## Learn More
+- **Build**: ./archi_mysql
+- **Ports**: 5000:5000
+- **Depends On**: mysql (service_healthy)
+- **Networks**: mysql_network
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Frontend
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Build**: ./front
+- **Ports**: 80:3000
+- **Depends On**:
+  - backend_mongodb
+  - backend_mysql
+- **Networks**:
+  - mongo_network
+  - mysql_network
 
-### Code Splitting
+## Volumes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **mongodb_data**: MongoDB data volume.
+- **mysql_data**: MySQL data volume.
 
-### Analyzing the Bundle Size
+## Networks
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **mongo_network**: Bridge network for MongoDB-related services.
+- **mysql_network**: Bridge network for MySQL-related services.
 
-### Making a Progressive Web App
+## Notes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- The frontend application depends on both backend services to be available.
+- Backend MySQL service waits for MySQL to be healthy before starting.
+- Backend services are built from separate directories: `archi_mongo` and `archi_mysql`.
+- The frontend application is built from the `front` directory.
 
-### Advanced Configuration
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
