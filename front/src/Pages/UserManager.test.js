@@ -115,9 +115,33 @@ describe("UserManager component", () => {
     })
   });
 
-  test("display error toast when delete button in modal is clicked", async () => {
+  test("display error toast when delete button in modal is clicked with error response", async () => {
     mock.onGet(`/users`).reply(200, JSON.stringify(users));
     mock.onDelete(`/users/1`).reply(500);
+
+    render(<UserManager port={port} />);
+
+    await waitFor(() => {
+      let deleteButton = screen.getAllByText("Delete").pop();
+      expect(deleteButton).toBeInTheDocument();
+  
+      fireEvent.click(deleteButton);
+    });
+
+    fireEvent.change(screen.getByPlaceholderText("password"), {
+      target: { value: "delete" },
+    });
+
+    fireEvent.click(screen.getByText("Confirm"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Une erreur est survenue lors de la suppression.")).toBeInTheDocument();
+    });
+  });
+
+  test("display error toast when delete button in modal is clicked with unauthorized response", async () => {
+    mock.onGet(`/users`).reply(200, JSON.stringify(users));
+    mock.onDelete(`/users/1`).reply(401);
 
     render(<UserManager port={port} />);
 
@@ -135,82 +159,7 @@ describe("UserManager component", () => {
     fireEvent.click(screen.getByText("Confirm"));
 
     await waitFor(() => {
-      expect(screen.getByText("Une erreur est survenue.")).toBeInTheDocument();
+      expect(screen.getByText("Le mot de passe que vous avez saisi(e) est incorrect.")).toBeInTheDocument();
     });
   });
-
-  // test("closes modal when cancel button is clicked", async () => {
-  //   mock.onGet(`http://localhost:${port}/users`).reply(200, users);
-
-  //   render(<UserManager port={port} />);
-
-  //   await act(async () => {
-  //     fireEvent.click(screen.getByText("Delete"));
-  //   });
-
-  //   // Click the cancel button in the modal
-  //   fireEvent.click(screen.getByText("Cancel"));
-
-  //   // Check if modal is closed
-  //   await waitFor(() => {
-  //     expect(screen.queryByText("Delete user")).not.toBeInTheDocument();
-  //   });
-  // });
-
-  // test("displays error message if user deletion fails", async () => {
-  //   mock.onGet(`http://localhost:${port}/users`).reply(200, users);
-
-  //   render(<UserManager port={port} />);
-
-  //   // Mock the delete request to fail
-  //   axios.delete.mockRejectedValueOnce(new Error("Failed to delete user"));
-
-  //   await act(async () => {
-  //     fireEvent.click(screen.getByText("Delete"));
-  //   });
-
-  //   // Enter password in the input field
-  //   fireEvent.change(screen.getByPlaceholderText("password"), {
-  //     target: { value: "test123" },
-  //   });
-
-  //   // Click the delete button in the modal
-  //   fireEvent.click(screen.getByText("Delete"));
-
-  //   // Wait for the delete request to complete
-  //   await waitFor(() => {
-  //     expect(axios.delete).toHaveBeenCalledWith("/users/1", {
-  //       data: { delete_pswd: "test123" },
-  //     });
-  //   });
-
-  //   // Check if error message is displayed
-  //   expect(screen.getByText("Failed to delete user")).toBeInTheDocument();
-  // });
-
-  // test("opens modal when delete button is clicked for each user", async () => {
-  //   mock.onGet(`http://localhost:${port}/users`).reply(200, users);
-
-  //   render(<UserManager port={port} />);
-
-  //   await act(async () => {
-  //     fireEvent.click(screen.getByText("Delete"));
-  //   });
-
-  //   // Check if modal is opened for the first user
-  //   await waitFor(() => {
-  //     expect(screen.getByText("Delete user")).toBeInTheDocument();
-  //   });
-
-  //   // Close modal
-  //   fireEvent.click(screen.getByText("Cancel"));
-
-  //   // Click the delete button for the second user
-  //   fireEvent.click(screen.getByText("Delete"));
-
-  //   // Check if modal is opened for the second user
-  //   await waitFor(() => {
-  //     expect(screen.getByText("Delete user")).toBeInTheDocument();
-  //   });
-  // });
 });

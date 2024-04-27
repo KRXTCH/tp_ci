@@ -55,7 +55,7 @@ describe('Form component', () => {
       target: { value: '12345' },
     });
 
-    expect(screen.getByText('Soumettre')).toBeEnabled();
+    expect(screen.getByText('Submit')).toBeEnabled();
   });
 
   test('disables the submit button if any field is invalid or empty', () => {
@@ -95,7 +95,7 @@ describe('Form component', () => {
       });
     });
 
-    expect(screen.getByText('Soumettre')).toBeDisabled();
+    expect(screen.getByText('Submit')).toBeDisabled();
   });
 
   test('renders the form with input fields', () => {
@@ -108,7 +108,7 @@ describe('Form component', () => {
     expect(screen.getByLabelText('Ville:')).toBeInTheDocument();
     expect(screen.getByLabelText('Code postal:')).toBeInTheDocument();
 
-    expect(screen.getByText('Soumettre')).toBeInTheDocument();
+    expect(screen.getByText('Submit')).toBeInTheDocument();
   });
 
   test('submits the form with valid data', async () => {
@@ -136,7 +136,7 @@ describe('Form component', () => {
     mock.onPost(`http://localhost:${port}/users`).reply(201, JSON.stringify(users));
 
     await act(async () => {
-      fireEvent.click(screen.getByText('Soumettre'));
+      fireEvent.click(screen.getByText('Submit'));
     });
 
     expect(screen.getByText('Formulaire soumis avec succès !')).toBeInTheDocument();
@@ -172,7 +172,7 @@ describe('Form component', () => {
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByText('Soumettre'));
+      fireEvent.click(screen.getByText('Submit'));
     });
 
     expect(screen.getByText('Date de naissance invalide')).toBeInTheDocument();
@@ -211,7 +211,7 @@ describe('Form component', () => {
     mock.onPost(`http://localhost:${port}/users`).reply(500, "error");
 
     await act(async () => {
-      fireEvent.click(screen.getByText('Soumettre'));
+      fireEvent.click(screen.getByText('Submit'));
     });
 
     await waitFor(() => {

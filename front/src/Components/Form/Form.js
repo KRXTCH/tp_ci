@@ -50,10 +50,8 @@ function Form({ port }) {
           "Content-Type": "application/json",
         },
       })
-      .then((response) => {
-        if (response.status === 201) {
-          toast.success("Formulaire soumis avec succès !");
-        }
+      .then(() => {
+        toast.success("Formulaire soumis avec succès !");
       })
       .catch((error) => {
         toast.error(`Erreur lors de l'envoie du formulaire.`);
@@ -210,7 +208,7 @@ function Form({ port }) {
         </div>
 
         <button type="submit" disabled={!isFormValid}>
-          Soumettre
+          Submit
         </button>
       </form>
       <ToastContainer />

@@ -20,7 +20,7 @@ connection = mysql.connector.connect(
     host="mysql"
 )
 
-@app.post('/users')
+@app.post('/users', status_code=201)
 async def add_user(user_data: dict = Body(...)):
     try:
         cursor = connection.cursor()
@@ -32,7 +32,7 @@ async def add_user(user_data: dict = Body(...)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.get('/users')
+@app.get('/users', status_code=200)
 async def get_users():
     try:
         cursor = connection.cursor(dictionary=True)

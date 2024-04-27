@@ -50,7 +50,7 @@ app.get("/users", async (req, res) => {
 app.delete("/users/:id", async (req, res) => {
   try {
     if (req.body.delete_pswd != process.env.DELETE_PSWD) {
-      res.status(301).send("Unauthorized");
+      res.status(401);
     }
     await User.findByIdAndDelete(req.params.id);
     res.send("Utilisateur supprimé avec succès");

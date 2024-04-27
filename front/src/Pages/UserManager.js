@@ -11,6 +11,7 @@ function UserManager({ port }) {
   let [showModal, setShowModal] = useState(false);
   let [deletePswd, setDeletePswd] = useState("");
   let [selectedUserId, setSelectedUserId] = useState();
+  let [currentPort, setCurrentPort] = useState(0);
 
   const api = axios.create({
     baseURL: `http://localhost:${port}`,
@@ -18,17 +19,25 @@ function UserManager({ port }) {
 
   useEffect(() => {
     const getUsers = () => {
-        api.get(`/users`).then((response) => {
+      api
+        .get(`/users`)
+        .then((response) => {
           setUserList(response.data);
           setUserCount(response.data.length);
         })
         .catch((error) => {
-          toast.error("Une erreur est survenue lors de la récupération des utilisateurs.");
+          toast.error(
+            "Une erreur est survenue lors de la récupération des utilisateurs."
+          );
           console.error(error);
         });
     };
-    getUsers();
-  }, [api]);
+
+    if (currentPort !== port) {
+      setCurrentPort(port);
+      getUsers();
+    }
+  }, [currentPort, port, api]);
 
   const handleOpenModal = (userId) => {
     setSelectedUserId(userId);
@@ -56,7 +65,12 @@ function UserManager({ port }) {
         toast.success(response.data);
       })
       .catch((error) => {
-        toast.error("Une erreur est survenue.");
+        let errorMsg = "Une erreur est survenue lors de la suppression.";
+
+        if (error.response.status === 401) {
+          errorMsg = "Le mot de passe que vous avez saisi(e) est incorrect.";
+        }
+        toast.error(errorMsg);
         console.error(error);
       });
 
@@ -108,6 +122,7 @@ function UserManager({ port }) {
       <ReactModal isOpen={showModal} className="modal">
         <h1>Delete user</h1>
         <input
+          id="delete-password"
           type="password"
           placeholder="password"
           value={deletePswd}
