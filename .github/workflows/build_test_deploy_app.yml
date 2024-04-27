@@ -34,8 +34,8 @@ jobs:
         run: cd front
       - name: Run e2e tests with cypress
         uses: cypress-io/github-action@v6
-      - name: Change directory
-        run: cd ..
+        with: 
+          path: front
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
