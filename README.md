@@ -20,6 +20,8 @@ This Docker Compose configuration sets up a development environment with MongoDB
 
 4. Once the containers are up and running, you can access the frontend application at `http://localhost`.
 
+5. Then, you can access to both backend at `/#mongo` or `/#mysql`.
+
 ## Services
 
 ### MongoDB

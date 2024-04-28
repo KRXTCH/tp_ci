@@ -5,19 +5,64 @@ import ReactModal from "react-modal";
 import { toast } from "react-toastify";
 import Form from "../Components/Form/Form";
 
+/**
+ * Functional component representing a user manager.
+ * @param {Object} props - Props for the component.
+ * @param {number} props.port - The port number for the API endpoint.
+ * @returns {JSX.Element} JSX representing the user manager.
+ */
 function UserManager({ port }) {
+  /**
+   * State hook to manage the number of users.
+   * @type {[number, function]} Array containing the user count and its updater function.
+   */
   let [userCount, setUserCount] = useState(0);
+
+  /**
+   * State hook to manage the list of users.
+   * @type {[Array, function]} Array containing the user list and its updater function.
+   */
   let [userList, setUserList] = useState([]);
+
+  /**
+   * State hook to manage the modal visibility.
+   * @type {[boolean, function]} Array containing the modal visibility state and its updater function.
+   */
   let [showModal, setShowModal] = useState(false);
+
+  /**
+   * State hook to manage the password for user deletion.
+   * @type {[string, function]} Array containing the delete password and its updater function.
+   */
   let [deletePswd, setDeletePswd] = useState("");
+
+  /**
+   * State hook to manage the selected user ID for deletion.
+   * @type {[string, function]} Array containing the selected user ID and its updater function.
+   */
   let [selectedUserId, setSelectedUserId] = useState();
+
+   /**
+   * State hook to manage the current port.
+   * @type {[number, function]} Array containing the current port and its updater function.
+   */
   let [currentPort, setCurrentPort] = useState(0);
 
+   /**
+   * Axios instance for API calls.
+   * @type {Object}
+   */
   const api = axios.create({
     baseURL: `http://localhost:${port}`,
   });
 
+  /**
+   * Effect hook to fetch users data from the backend.
+   */
   useEffect(() => {
+    /**
+     * Function to fetch users data.
+     */
     const getUsers = () => {
       api
         .get(`/users`)
@@ -39,20 +84,34 @@ function UserManager({ port }) {
     }
   }, [currentPort, port, api]);
 
+  /**
+   * Function to open the delete user modal.
+   * @param {string} userId - The ID of the user to delete.
+   */
   const handleOpenModal = (userId) => {
     setSelectedUserId(userId);
     setShowModal(true);
   };
 
+  /**
+   * Function to close the delete user modal.
+   */
   const handleCloseModal = () => {
     setSelectedUserId("");
     setShowModal(false);
   };
 
+  /**
+   * Handler function for the delete password input change event.
+   * @param {Object} e - The event object.
+   */
   const handleDeletePswd = (e) => {
     setDeletePswd(e.target.value);
   };
 
+  /**
+   * Function to handle user deletion.
+   */
   const onDelete = function () {
     api
       .delete(`/users/${selectedUserId}`, {

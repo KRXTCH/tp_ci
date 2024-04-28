@@ -8,10 +8,22 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 /**
- * Composant de formulaire pour la saisie et la sauvegarde des données utilisateur.
- * @returns {JSX.Element} Formulaire.
+ * Functional component representing a form to create a user.
+ * @param {Object} props - Props for the component.
+ * @param {number} props.port - The port number for the API endpoint.
+ * @returns {JSX.Element} JSX representing the user creation form.
  */
 function Form({ port }) {
+   /**
+   * State hook to manage form data.
+   * @type {Object}
+   * @property {string} birthDate - The birth date of the user.
+   * @property {string} email - The email of the user.
+   * @property {string} name - The name of the user.
+   * @property {string} surname - The surname of the user.
+   * @property {string} city - The city of the user.
+   * @property {string} postalCode - The postal code of the user.
+   */
   const [formData, setFormData] = React.useState({
     birthDate: "",
     email: "",
@@ -21,6 +33,16 @@ function Form({ port }) {
     postalCode: "",
   });
 
+   /**
+   * State hook to manage form validation results.
+   * @type {Object}
+   * @property {boolean} isBirthDateValid - Indicates if the birth date is valid.
+   * @property {boolean} isEmailValid - Indicates if the email is valid.
+   * @property {boolean} isNameValid - Indicates if the name is valid.
+   * @property {boolean} isSurnameValid - Indicates if the surname is valid.
+   * @property {boolean} isCityValid - Indicates if the city is valid.
+   * @property {boolean} isPostalCodeValid - Indicates if the postal code is valid.
+   */
   const [validationResults, setValidationResults] = React.useState({
     isBirthDateValid: true,
     isEmailValid: true,
@@ -30,8 +52,15 @@ function Form({ port }) {
     isPostalCodeValid: true,
   });
 
+  /**
+   * State hook to manage the overall form validity.
+   * @type {boolean}
+   */
   const [isFormValid, setIsFormValid] = React.useState(false);
 
+  /**
+   * Effect hook to check if all form fields are filled and update form validity accordingly.
+   */
   React.useEffect(() => {
     const allFieldsFilled = Object.values(formData).every(
       (value) => value.trim() !== ""
@@ -39,6 +68,9 @@ function Form({ port }) {
     setIsFormValid(allFieldsFilled);
   }, [formData]);
 
+  /**
+   * Function to save form data to the backend.
+   */
   const saveFormData = async () => {
     const api = axios.create({
       baseURL: `http://localhost:${port}`,
@@ -68,6 +100,10 @@ function Form({ port }) {
     });
   };
 
+  /**
+   * Handler function for input change events.
+   * @param {Object} e - The event object.
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -83,6 +119,10 @@ function Form({ port }) {
     }));
   };
 
+  /**
+   * Handler function for form submission.
+   * @param {Object} e - The event object.
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
 

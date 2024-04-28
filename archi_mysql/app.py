@@ -4,6 +4,7 @@ import mysql.connector
 
 app = FastAPI()
 
+# CORS middleware to allow requests from all origins with specified methods
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,6 +13,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Connection to the MySQL database
 connection = mysql.connector.connect(
     database="ynovmsql",
     user="ynovuser",
@@ -20,6 +22,7 @@ connection = mysql.connector.connect(
     host="mysql"
 )
 
+# Endpoint to add a new user
 @app.post('/users', status_code=201)
 async def add_user(user_data: dict = Body(...)):
     try:
@@ -32,6 +35,7 @@ async def add_user(user_data: dict = Body(...)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+# Endpoint to retrieve all users
 @app.get('/users', status_code=200)
 async def get_users():
     try:
@@ -44,9 +48,11 @@ async def get_users():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Endpoint to delete a user by ID
 @app.delete('/users/{user_id}')
 async def delete_user(user_id: int, body: dict = Body(...)):
     try:
+        # Check if the provided delete password matches
         if body['delete_pswd'] != 'delete':
             raise HTTPException(status_code=401, detail="Unauthorized")
         cursor = connection.cursor()

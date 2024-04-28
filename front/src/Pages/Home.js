@@ -1,3 +1,7 @@
+/**
+ * Functional component representing the Home page.
+ * @returns {JSX.Element} JSX representing the Home page.
+ */
 function Home() {
   return (
     <div>

@@ -2,6 +2,10 @@ import UserManager from "./Pages/UserManager";
 import Home from "./Pages/Home";
 import { Route, Routes } from "react-router-dom";
 
+/**
+ * Functional component representing the root of the application.
+ * @returns {JSX.Element} JSX representing the root of the application.
+ */
 function App() {
   return (
     
