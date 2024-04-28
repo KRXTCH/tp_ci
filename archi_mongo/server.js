@@ -29,7 +29,7 @@ db.once("open", () => {
 
 /**
  * Model representing a user in MongoDB.
- * @type {import("mongoose").Model<User>}
+ * @type {mongoose.Model<User>}
  */
 const userSchema = new mongoose.Schema({
   bithDate: String,
