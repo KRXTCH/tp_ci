@@ -84,6 +84,12 @@ This Docker Compose configuration sets up a development environment with MongoDB
 - **mongo_network**: Bridge network for MongoDB-related services.
 - **mysql_network**: Bridge network for MySQL-related services.
 
+### Tests (jest/Cypress)
+
+  1. Go to the front folder `cd front`.
+
+  2. run jest tests with `npm run test` or cypress tests with `npm run cypress`.
+
 ## Notes
 
 - The frontend application depends on both backend services to be available.
