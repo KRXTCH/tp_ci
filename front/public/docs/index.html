@@ -43,44 +43,117 @@
 
 
     <section>
-        <article><h1>Getting Started with Create React App</h1>
-<p>This project was bootstrapped with <a href="https://github.com/facebook/create-react-app">Create React App</a>.</p>
-<h2>Available Scripts</h2>
-<p>In the project directory, you can run:</p>
-<h3><code>npm start</code></h3>
-<p>Runs the app in the development mode.<br>
-Open <a href="http://localhost:3000">http://localhost:3000</a> to view it in your browser.</p>
-<p>The page will reload when you make changes.<br>
-You may also see any lint errors in the console.</p>
-<h3><code>npm test</code></h3>
-<p>Launches the test runner in the interactive watch mode.<br>
-See the section about <a href="https://facebook.github.io/create-react-app/docs/running-tests">running tests</a> for more information.</p>
-<h3><code>npm run build</code></h3>
-<p>Builds the app for production to the <code>build</code> folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.</p>
-<p>The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!</p>
-<p>See the section about <a href="https://facebook.github.io/create-react-app/docs/deployment">deployment</a> for more information.</p>
-<h3><code>npm run eject</code></h3>
-<p><strong>Note: this is a one-way operation. Once you <code>eject</code>, you can't go back!</strong></p>
-<p>If you aren't satisfied with the build tool and configuration choices, you can <code>eject</code> at any time. This command will remove the single build dependency from your project.</p>
-<p>Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except <code>eject</code> will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.</p>
-<p>You don't have to ever use <code>eject</code>. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.</p>
-<h2>Learn More</h2>
-<p>You can learn more in the <a href="https://facebook.github.io/create-react-app/docs/getting-started">Create React App documentation</a>.</p>
-<p>To learn React, check out the <a href="https://reactjs.org/">React documentation</a>.</p>
-<h3>Code Splitting</h3>
-<p>This section has moved here: <a href="https://facebook.github.io/create-react-app/docs/code-splitting">https://facebook.github.io/create-react-app/docs/code-splitting</a></p>
-<h3>Analyzing the Bundle Size</h3>
-<p>This section has moved here: <a href="https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size">https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size</a></p>
-<h3>Making a Progressive Web App</h3>
-<p>This section has moved here: <a href="https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app">https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app</a></p>
-<h3>Advanced Configuration</h3>
-<p>This section has moved here: <a href="https://facebook.github.io/create-react-app/docs/advanced-configuration">https://facebook.github.io/create-react-app/docs/advanced-configuration</a></p>
-<h3>Deployment</h3>
-<p>This section has moved here: <a href="https://facebook.github.io/create-react-app/docs/deployment">https://facebook.github.io/create-react-app/docs/deployment</a></p>
-<h3><code>npm run build</code> fails to minify</h3>
-<p>This section has moved here: <a href="https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify">https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify</a></p></article>
+        <article><h1>README</h1>
+<p>This Docker Compose configuration sets up a development environment with MongoDB, MySQL, backend services (one using MongoDB and the other MySQL), and a frontend application.</p>
+<h2>Prerequisites</h2>
+<ul>
+<li>Docker installed on your system.</li>
+</ul>
+<h2>Getting Started</h2>
+<ol>
+<li>
+<p>Clone this repository to your local machine.</p>
+</li>
+<li>
+<p>Navigate to the directory containing the <code>docker-compose.yml</code> file.</p>
+</li>
+<li>
+<p>Run the following command to start the services:</p>
+<pre class="prettyprint source"><code>docker-compose up
+</code></pre>
+</li>
+<li>
+<p>Once the containers are up and running, you can access the frontend application at <code>http://localhost</code>.</p>
+</li>
+<li>
+<p>Then, you can access to both backend at <code>/#mongo</code> or <code>/#mysql</code>.</p>
+</li>
+</ol>
+<h2>Services</h2>
+<h3>MongoDB</h3>
+<ul>
+<li><strong>Image</strong>: mongo:latest</li>
+<li><strong>Ports</strong>: 27017:27017</li>
+<li><strong>Volume</strong>: mongodb_data:/data/db</li>
+<li><strong>Command</strong>: mongod --noauth</li>
+</ul>
+<h3>MySQL</h3>
+<ul>
+<li><strong>Image</strong>: mysql:latest</li>
+<li><strong>Ports</strong>: 3306:3306</li>
+<li><strong>Environment Variables</strong>:
+<ul>
+<li>MYSQL_ROOT_PASSWORD: ynovroot</li>
+<li>MYSQL_DATABASE: ynovmsql</li>
+<li>MYSQL_USER: ynovuser</li>
+<li>MYSQL_PASSWORD: ynovpwd</li>
+</ul>
+</li>
+<li><strong>Volumes</strong>:
+<ul>
+<li>./migrations:/docker-entrypoint-initdb.d</li>
+<li>mysql_data:/var/lib/mysql</li>
+</ul>
+</li>
+<li><strong>Healthcheck</strong>:
+<ul>
+<li>Test: <code>mysqladmin ping -h localhost</code></li>
+<li>Interval: 10 seconds</li>
+<li>Timeout: 5 seconds</li>
+<li>Retries: 3</li>
+</ul>
+</li>
+</ul>
+<h3>Backend MongoDB</h3>
+<ul>
+<li><strong>Build</strong>: ./archi_mongo</li>
+<li><strong>Ports</strong>: 3000:3000</li>
+<li><strong>Depends On</strong>: mongodb</li>
+<li><strong>Networks</strong>: mongo_network</li>
+</ul>
+<h3>Backend MySQL</h3>
+<ul>
+<li><strong>Build</strong>: ./archi_mysql</li>
+<li><strong>Ports</strong>: 5000:5000</li>
+<li><strong>Depends On</strong>: mysql (service_healthy)</li>
+<li><strong>Networks</strong>: mysql_network</li>
+</ul>
+<h3>Frontend</h3>
+<ul>
+<li><strong>Build</strong>: ./front</li>
+<li><strong>Ports</strong>: 80:3000</li>
+<li><strong>Depends On</strong>:
+<ul>
+<li>backend_mongodb</li>
+<li>backend_mysql</li>
+</ul>
+</li>
+<li><strong>Networks</strong>:
+<ul>
+<li>mongo_network</li>
+<li>mysql_network</li>
+</ul>
+</li>
+</ul>
+<h2>Volumes</h2>
+<ul>
+<li><strong>mongodb_data</strong>: MongoDB data volume.</li>
+<li><strong>mysql_data</strong>: MySQL data volume.</li>
+</ul>
+<h2>Networks</h2>
+<ul>
+<li><strong>mongo_network</strong>: Bridge network for MongoDB-related services.</li>
+<li><strong>mysql_network</strong>: Bridge network for MySQL-related services.</li>
+</ul>
+<h2>Notes</h2>
+<ul>
+<li>The frontend application depends on both backend services to be available.</li>
+<li>Backend MySQL service waits for MySQL to be healthy before starting.</li>
+<li>Backend services are built from separate directories: <code>archi_mongo</code> and <code>archi_mysql</code>.</li>
+<li>The frontend application is built from the <code>front</code> directory.</li>
+</ul>
+<h2>License</h2>
+<p>This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details.</p></article>
     </section>
 
 
@@ -91,13 +164,13 @@ Your app is ready to be deployed!</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Form">Form</a></li><li><a href="global.html#birthDateValidator">birthDateValidator</a></li><li><a href="global.html#calculateAge">calculateAge</a></li><li><a href="global.html#mailValidator">mailValidator</a></li><li><a href="global.html#nameValidator">nameValidator</a></li><li><a href="global.html#postalCodeValidator">postalCodeValidator</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#App">App</a></li><li><a href="global.html#Form">Form</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#UserManager">UserManager</a></li><li><a href="global.html#birthDateValidator">birthDateValidator</a></li><li><a href="global.html#calculateAge">calculateAge</a></li><li><a href="global.html#mailValidator">mailValidator</a></li><li><a href="global.html#nameValidator">nameValidator</a></li><li><a href="global.html#port">port</a></li><li><a href="global.html#postalCodeValidator">postalCodeValidator</a></li><li><a href="global.html#userSchema">userSchema</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat Apr 27 2024 20:41:28 GMT+0200 (heure d’été d’Europe centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Apr 28 2024 12:17:27 GMT+0200 (heure d’été d’Europe centrale)
 </footer>
 
 <script> prettyPrint(); </script>
