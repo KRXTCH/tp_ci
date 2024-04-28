@@ -173,7 +173,7 @@ function Form({ port }) {
             onChange={handleInputChange}
           />
           {!validationResults.isBirthDateValid && (
-            <span style={{ color: "red" }}>Date de naissance invalide</span>
+            <span style={{ color: "red" }}>Date de naissance invalide. (Format: YYYY-mm-dd)</span>
           )}
         </div>
 

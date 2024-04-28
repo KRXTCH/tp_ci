@@ -203,7 +203,7 @@ describe('Form component', () => {
       fireEvent.click(screen.getByText('Submit'));
     });
 
-    expect(screen.getByText('Date de naissance invalide')).toBeInTheDocument();
+    expect(screen.getByText('Date de naissance invalide. (Format: YYYY-mm-dd)')).toBeInTheDocument();
     expect(screen.getByText('Adresse e-mail invalide')).toBeInTheDocument();
     expect(screen.getByText('Nom invalide')).toBeInTheDocument();
     expect(screen.getByText('Prenom invalide')).toBeInTheDocument();
