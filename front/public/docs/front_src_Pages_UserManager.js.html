@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: front/src/Pages/UserManager.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: front/src/Pages/UserManager.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useState } from "react";
+import { useEffect } from "react";
+import axios from "axios";
+import ReactModal from "react-modal";
+import { toast } from "react-toastify";
+import Form from "../Components/Form/Form";
+
+/**
+ * Functional component representing a user manager.
+ * @param {Object} props - Props for the component.
+ * @param {number} props.port - The port number for the API endpoint.
+ * @returns {JSX.Element} JSX representing the user manager.
+ */
+function UserManager({ port }) {
+  /**
+   * State hook to manage the number of users.
+   * @type {{userCount: number} | React.Dispatch&lt;number>}
+   */
+  let [userCount, setUserCount] = useState(0);
+
+  /**
+   * State hook to manage the list of users.
+   * @type {{userList: Array&lt;User>} | React.Dispatch&lt;Array&lt;User>>}
+   */
+  let [userList, setUserList] = useState([]);
+
+  /**
+   * State hook to manage the modal visibility.
+   * @type {{showModal: boolean} | React.Dispatch&lt;boolean>}
+   */
+  let [showModal, setShowModal] = useState(false);
+
+  /**
+   * State hook to manage the password for user deletion.
+   * @type {{deletePswd: string} | React.Dispatch&lt;string>}
+   */
+  let [deletePswd, setDeletePswd] = useState("");
+
+  /**
+   * State hook to manage the selected user ID for deletion.
+   * @type {{selectedUserId: string | undefined} | React.Dispatch&lt;string | undefined>}
+   */
+  let [selectedUserId, setSelectedUserId] = useState(undefined);
+
+  /**
+   * State hook to manage the current port.
+   * @type {{currentPort: number} | React.Dispatch&lt;number>}
+   */
+  let [currentPort, setCurrentPort] = useState(0);
+
+  /**
+   * Axios instance for API calls.
+   * @type {Object}
+   */
+  const api = axios.create({
+    baseURL: `http://localhost:${port}`,
+  });
+
+  /**
+   * Effect hook to fetch users data from the backend.
+   */
+  useEffect(() => {
+    /**
+     * Function to fetch users data.
+     */
+    const getUsers = () => {
+      api
+        .get(`/users`)
+        .then((response) => {
+          setUserList(response.data);
+          setUserCount(response.data.length);
+        })
+        .catch((error) => {
+          toast.error(
+            "Une erreur est survenue lors de la récupération des utilisateurs."
+          );
+          console.error(error);
+        });
+    };
+
+    if (currentPort !== port) {
+      setCurrentPort(port);
+      getUsers();
+    }
+  }, [currentPort, port, api]);
+
+  /**
+   * Function to open the delete user modal.
+   * @param {string} userId - The ID of the user to delete.
+   */
+  const handleOpenModal = (userId) => {
+    setSelectedUserId(userId);
+    setShowModal(true);
+  };
+
+  /**
+   * Function to close the delete user modal.
+   */
+  const handleCloseModal = () => {
+    setSelectedUserId("");
+    setShowModal(false);
+  };
+
+  /**
+   * Handler function for the delete password input change event.
+   * @param {Object} e - The event object.
+   */
+  const handleDeletePswd = (e) => {
+    setDeletePswd(e.target.value);
+  };
+
+  /**
+   * Function to handle user deletion.
+   */
+  const onDelete = function () {
+    api
+      .delete(`/users/${selectedUserId}`, {
+        data: { delete_pswd: deletePswd },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        toast.success(response.data);
+      })
+      .catch((error) => {
+        let errorMsg = "Une erreur est survenue lors de la suppression.";
+
+        if (error.response.status === 401) {
+          errorMsg = "Le mot de passe que vous avez saisi(e) est incorrect.";
+        }
+        toast.error(errorMsg);
+        console.error(error);
+      });
+
+    handleCloseModal();
+  };
+
+  return (
+    &lt;div>
+      &lt;h1>User manager&lt;/h1>
+      &lt;p>{userCount} user(s) already registered&lt;/p>
+      &lt;div>
+        &lt;h2>Manage users&lt;/h2>
+        &lt;table>
+          &lt;thead>
+            &lt;tr>
+              &lt;th>Surname&lt;/th>
+              &lt;th>Name&lt;/th>
+              &lt;th>Email&lt;/th>
+              &lt;th>Birthdate&lt;/th>
+              &lt;th>City&lt;/th>
+              &lt;th>Postal Code&lt;/th>
+              &lt;th>Action&lt;/th>
+            &lt;/tr>
+          &lt;/thead>
+          &lt;tbody>
+            {userList.map((user) => (
+              &lt;tr key={user._id ?? user.id}>
+                &lt;td>{user.surname}&lt;/td>
+                &lt;td>{user.name}&lt;/td>
+                &lt;td>{user.email}&lt;/td>
+                &lt;td>{user.birthDate}&lt;/td>
+                &lt;td>{user.city}&lt;/td>
+                &lt;td>{user.postalCode}&lt;/td>
+                &lt;td>
+                  &lt;button
+                    type="button"
+                    style={{ color: "red" }}
+                    onClick={() => handleOpenModal(user._id ?? user.id)}
+                  >
+                    Delete
+                  &lt;/button>
+                &lt;/td>
+              &lt;/tr>
+            ))}
+          &lt;/tbody>
+        &lt;/table>
+      &lt;/div>
+      &lt;Form port={port} />
+      &lt;ReactModal isOpen={showModal} className="modal">
+        &lt;h1>Delete user&lt;/h1>
+        &lt;input
+          id="delete-password"
+          type="password"
+          placeholder="password"
+          value={deletePswd}
+          onChange={handleDeletePswd}
+        >&lt;/input>
+        &lt;button onClick={onDelete}>Confirm&lt;/button>
+        &lt;button onClick={handleCloseModal}>Cancel&lt;/button>
+      &lt;/ReactModal>
+    &lt;/div>
+  );
+}
+
+export default UserManager;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#App">App</a></li><li><a href="global.html#Form">Form</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#UserManager">UserManager</a></li><li><a href="global.html#birthDateValidator">birthDateValidator</a></li><li><a href="global.html#calculateAge">calculateAge</a></li><li><a href="global.html#mailValidator">mailValidator</a></li><li><a href="global.html#nameValidator">nameValidator</a></li><li><a href="global.html#port">port</a></li><li><a href="global.html#postalCodeValidator">postalCodeValidator</a></li><li><a href="global.html#userSchema">userSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Apr 28 2024 12:53:30 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
